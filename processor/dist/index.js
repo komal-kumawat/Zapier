@@ -1,9 +1,6 @@
-import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { Kafka } from "kafkajs";
 const client = new PrismaClient();
-const app = express();
-app.use(express.json());
 const TOPIC_NAME = "zap-events";
 const kafka = new Kafka({
     clientId: "outbox-processor",
@@ -11,15 +8,13 @@ const kafka = new Kafka({
 });
 async function main() {
     const producer = kafka.producer();
-    // const consumer = kafka.consumer({
-    //     groupId: "test-group"
-    // });
     await producer.connect();
     while (1) {
         const pendingRows = await client.zapRunOutbox.findMany({
             where: {},
             take: 10
         });
+        console.log(pendingRows);
         await producer.send({
             topic: TOPIC_NAME,
             messages: pendingRows.map(r => ({
@@ -33,9 +28,7 @@ async function main() {
                 }
             }
         });
-        // await consumer.connect();
-        // await consumer.send({
-        // })
+        await new Promise(r => setTimeout(r, 5000));
     }
 }
 main();
