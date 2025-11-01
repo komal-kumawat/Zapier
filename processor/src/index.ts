@@ -1,10 +1,7 @@
-import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { Kafka } from "kafkajs";
 
 const client = new PrismaClient();
-const app = express();
-app.use(express.json());
 
 const TOPIC_NAME = "zap-events";
 
@@ -15,10 +12,6 @@ const kafka = new Kafka({
 
 async function main() {
     const producer = kafka.producer();
-    // const consumer = kafka.consumer({
-    //     groupId: "test-group"
-    // });
-
     await producer.connect();
 
     while (1) {
@@ -43,10 +36,6 @@ async function main() {
             }
         })
 
-        // await consumer.connect();
-        // await consumer.send({
-
-        // })
     }
 }
 main();
