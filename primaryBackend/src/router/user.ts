@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { signinSchema, signupSchema } from "../models/user.js";
-import { prismaclient } from "../db/index.js";
+import  prismaclient  from "../db/index.js";
 dotenv.config();
 
 const router = Router();
