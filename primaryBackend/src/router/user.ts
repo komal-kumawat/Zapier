@@ -3,7 +3,7 @@ import { authMiddleware } from "../middleware/Authmiddleware.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { signupSchema } from "../models/user.js";
+import { signinSchema, signupSchema } from "../models/user.js";
 import { prismaclient } from "../db/index.js";
 dotenv.config();
 
@@ -42,13 +42,63 @@ router.post("/signup" , async(req:Request,res:Response)=>{
    return res.status(201).json({message:"user created successfully" , user})
 })
 
-router.post("/signin" , (req:Request,res:Response)=>{
-    console.log("signin handler")
+router.post("/signin" , async(req:Request,res:Response)=>{
+    const body = req.body;
+    const parsedData = signinSchema.safeParse(body);
+    if(!parsedData.success){
+        return res.status(400).json({
+            message:"incorrect input"
+        });
+    }
+
+    try{
+        const user = await prismaclient.user.findFirst({
+            where:{
+                email:parsedData.data.username,
+                password:parsedData.data.password
+            }
+        })
+        if(!user){
+            return res.status(401).json({
+                message:"Invalid credentials"
+            })
+        }
+        const token = jwt.sign({
+            id:user.id
+        } , (process.env.JWT_SECRET as string)||"komalsecret")
+        
+        return res.status(201).json({
+            message:"user successfully signed in" , token
+        })
+
+    }catch(e){
+         return res.status(500).json({message:"error while signin " , e});
+    }
 })
 
-router.get("/user" ,authMiddleware, (req:Request,res:Response)=>{
-    console.log("user");
-    res.send("User route accessed");
+router.get("/me" ,authMiddleware, async(req:Request,res:Response)=>{
+    try{
+
+    // @ts-ignore
+    const id = req.id;
+    const user = await prismaclient.user.findFirst({
+        where:{
+            id
+        },
+        select:{
+            name:true,
+            email:true
+        }
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user });
+            
+    }catch{
+        return res.status(500).json({message:"Internal server error"});
+    }
 
 })
 
