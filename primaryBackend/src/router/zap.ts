@@ -85,7 +85,7 @@ router.get("/", authMiddleware, async (req, res) => {
         return res.status(201).json({ zaps })
 
     } catch (e) {
-        return res.status(500).json({ msg: "Internal server error" });
+        return res.status(500).json({ msg: "Internal server error"  , e});
     }
 })
 

@@ -39,14 +39,13 @@ router.post("/signin", async (req, res) => {
     const parsedData = signinSchema.safeParse(body);
     if (!parsedData.success) {
         return res.status(400).json({
-            message: "incorrect input"
+            message: "Incorrect input"
         });
     }
     try {
         const user = await prismaclient.user.findFirst({
             where: {
-                email: parsedData.data.username,
-                password: parsedData.data.password
+                email: parsedData.data.username
             }
         });
         if (!user) {
@@ -54,15 +53,20 @@ router.post("/signin", async (req, res) => {
                 message: "Invalid credentials"
             });
         }
-        const token = jwt.sign({
-            id: user.id
-        }, process.env.JWT_SECRET || "komalsecret");
-        return res.status(201).json({
-            message: "user successfully signed in", token
+        const isPasswordValid = await bcrypt.compare(parsedData.data.password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "komalsecret", { expiresIn: "1h" });
+        return res.status(200).json({
+            message: "User successfully signed in",
+            token
         });
     }
     catch (e) {
-        return res.status(500).json({ message: "error while signin ", e });
+        return res.status(500).json({ message: "Error while signing in", e });
     }
 });
 router.get("/me", authMiddleware, async (req, res) => {

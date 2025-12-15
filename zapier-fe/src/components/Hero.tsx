@@ -1,8 +1,8 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { Feature } from "./Feature"
 import { PrimaryButton } from "./buttons/PrimaryButton"
 import { SecondaryButton } from "./buttons/SecondaryButton"
+import { Feature } from "./Feature"
 
 export const Hero = () => {
     const router = useRouter();
