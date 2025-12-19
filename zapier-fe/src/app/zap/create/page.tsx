@@ -170,8 +170,8 @@ function Modal({
                       if (isTrigger) {
                         onSelect({ id: item.id, name: item.name, metadata: {} });
                       } else {
-                        onSelect({ id: item.id, name: item.name , metadata:{} });
-                        // handleSelectAction({ id: item.id, name: item.name });
+                        // onSelect({ id: item.id, name: item.name , metadata:{} });
+                        handleSelectAction({ id: item.id, name: item.name });
                       }
                     }}
                   >
@@ -186,7 +186,7 @@ function Modal({
               <EmailSelector setMetadata={handleSubmitMetadata} />
             )}
 
-            {selectedAction && selectedAction.id === "send-sol" && (
+            {selectedAction && selectedAction.id === "send_slack" && (
               <SolanaSelector setMetadata={handleSubmitMetadata} />
             )}
           </div>
@@ -204,7 +204,6 @@ function EmailSelector({setMetadata}: {
     const [body, setBody] = useState("");
 
     return <div className="bg-white h-100px">
-        hello
         <Input label={"To"} type={"text"} placeholder="To" onChange={(e) => setEmail(e.target.value)}></Input>
         <Input label={"Body"} type={"text"} placeholder="Body" onChange={(e) => setBody(e.target.value)}></Input>
         <div className="pt-2">
