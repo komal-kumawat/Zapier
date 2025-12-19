@@ -122,70 +122,80 @@ export default function() {
     </div>
 }
 
-function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (props: null | { name: string; id: string; metadata: any; }) => void, availableItems: {id: string, name: string, image: string;}[] }) {
-    const [step, setStep] = useState(0);
-    const [selectedAction, setSelectedAction] = useState<{
-        id: string;
-        name: string;
-    }>();
-    const isTrigger = index === 1;
+function Modal({
+  index,
+  onSelect,
+  availableItems
+}: {
+  index: number,
+  onSelect: (props: null | { id: string; name: string; metadata: any }) => void,
+  availableItems: { id: string; name: string; image: string }[]
+}) {
+  const [selectedAction, setSelectedAction] = useState<{ id: string; name: string } | null>(null);
+  const isTrigger = index === 1;
 
-    return <div className="fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full  bg-opacity-70 flex text-gray-900">
-        <div className="relative p-4 w-full max-w-2xl max-h-full">
-            <div className="relative bg-white rounded-lg shadow ">
-                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t ">
-                    <div className="text-xl">
-                        Select {index === 1 ? "Trigger" : "Action"}
-                    </div>
-                    <button onClick={() => {
-                        onSelect(null);
-                    }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="default-modal">
-                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                        <span className="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <div className="p-4 md:p-5 space-y-4">
-                    {step === 1 && selectedAction?.id === "email" && <EmailSelector setMetadata={(metadata) => {
-                        onSelect({
-                            ...selectedAction,
-                            metadata
-                        })
-                    }} />}
+  const handleSelectAction = (item: { id: string; name: string }) => {
+    setSelectedAction(item);
+  };
 
-                    {(step === 1 && selectedAction?.id === "send-sol") && <SolanaSelector setMetadata={(metadata) => {
-                        onSelect({
-                            ...selectedAction,
-                            metadata
-                        })
-                    }} />}
+  const handleSubmitMetadata = (metadata: any) => {
+    if (!selectedAction) return;
+    onSelect({ ...selectedAction, metadata });
+  };
 
-                    {step === 0 && <div>{availableItems.map(({id, name, image}) => {
-                            return <div onClick={() => {
-                                if (isTrigger) {
-                                    onSelect({
-                                        id,
-                                        name,
-                                        metadata: {}
-                                    })
-                                } else {
-                                    setStep(s => s + 1);
-                                    setSelectedAction({
-                                        id,
-                                        name
-                                    })
-                                }
-                            }} className="flex border p-4 cursor-pointer hover:bg-slate-100">
-                                <img src={image} width={30} className="rounded-full" /> <div className="flex flex-col justify-center"> {name} </div>
-                            </div>
-                        })}</div>}                    
-                </div>
-            </div>
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] bg-opacity-70 text-gray-900">
+      <div className="relative p-4 w-full max-w-2xl max-h-full">
+        <div className="bg-white rounded-lg shadow">
+          <div className="flex items-center justify-between p-4 border-b rounded-t">
+            <div className="text-xl">Select {isTrigger ? "Trigger" : "Action"}</div>
+            <button
+              onClick={() => onSelect(null)}
+              className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg w-8 h-8 flex justify-center items-center"
+            >
+              <svg className="w-3 h-3" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div className="p-4 space-y-4">
+            {!selectedAction && (
+              <div>
+                {availableItems.map(item => (
+                  <div
+                    key={item.id}
+                    className="flex border p-4 cursor-pointer hover:bg-slate-100"
+                    onClick={() => {
+                      if (isTrigger) {
+                        onSelect({ id: item.id, name: item.name, metadata: {} });
+                      } else {
+                        onSelect({ id: item.id, name: item.name , metadata:{} });
+                        // handleSelectAction({ id: item.id, name: item.name });
+                      }
+                    }}
+                  >
+                    <img src={item.image} width={30} className="rounded-full" />
+                    <div className="flex flex-col justify-center ml-2">{item.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {selectedAction && selectedAction.id === "email" && (
+              <EmailSelector setMetadata={handleSubmitMetadata} />
+            )}
+
+            {selectedAction && selectedAction.id === "send-sol" && (
+              <SolanaSelector setMetadata={handleSubmitMetadata} />
+            )}
+          </div>
         </div>
+      </div>
     </div>
-
+  );
 }
+
 
 function EmailSelector({setMetadata}: {
     setMetadata: (params: any) => void;
@@ -193,7 +203,8 @@ function EmailSelector({setMetadata}: {
     const [email, setEmail] = useState("");
     const [body, setBody] = useState("");
 
-    return <div>
+    return <div className="bg-white h-100px">
+        hello
         <Input label={"To"} type={"text"} placeholder="To" onChange={(e) => setEmail(e.target.value)}></Input>
         <Input label={"Body"} type={"text"} placeholder="Body" onChange={(e) => setBody(e.target.value)}></Input>
         <div className="pt-2">
