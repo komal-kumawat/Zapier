@@ -78,67 +78,89 @@ export default function () {
 }
 
 function ZapTable({ zaps }: { zaps: Zap[] }) {
-  const router = useRouter();
+    const router = useRouter();
 
-  return (
-    <div className="p-8 max-w-screen-lg w-full">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">
-                Name
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">
-                ID
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">
-                Created At
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">
-                Webhook URL
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">
-                Go
-              </th>
-            </tr>
-          </thead>
+    return (
+        <div className="p-8 max-w-screen-lg w-full">
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse rounded-lg overflow-hidden">
+                    <thead className="bg-gray-100">
+                        <tr>
+                            <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                Name
+                            </th>
+                            <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                ID
+                            </th>
+                            <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                Created At
+                            </th>
+                            <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                Webhook URL
+                            </th>
+                            <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                Go
+                            </th>
+                        </tr>
+                    </thead>
 
-          <tbody>
-            {zaps.map((z) => (
-              <tr
-                key={z.id}
-                className="border-b hover:bg-gray-900 transition"
-              >
-                {/* <td className="flex-1 flex"><img src={z.trigger.type.image} alt="zap" className="w-[30px] h-[30px]" /> {z.actions.map(x => <img src={x.type.image} className="w-[30px] h-[30px]" />)}</td> */}
-                <td className="px-4 py-3">
-                  Zap
-                </td>
+                    <tbody>
+                        {zaps.map((z) => (
+                            <tr
+                                key={z.id}
+                                className="border-b hover:bg-gray-900 transition"
+                            >
+                                {z.trigger?.type?.image ?
+                                    <td className="flex items-center gap-2">
+                                        {z.trigger?.type?.image && (
+                                            <img
+                                                src={z.trigger.type.image}
+                                                alt="trigger"
+                                                className="w-[30px] h-[30px]"
+                                            />
+                                        )}
 
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {z.id}
-                </td>
+                                        {z.actions.map((x) =>
+                                            x.type?.image ? (
+                                                <img
+                                                    key={x.id}
+                                                    src={x.type.image}
+                                                    alt="action"
+                                                    className="w-[30px] h-[30px]"
+                                                />
+                                            ) : null
+                                        )}
+                                    </td>
+                                    :
 
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  Nov 13, 2023
-                </td>
+                                    (<td className="px-4 py-3">
+                                        Zap
+                                    </td>)}
 
-                <td className="px-4 py-3 text-sm text-blue-600 truncate max-w-[250px]">
-                  {`${HOOKS_URL}/hooks/catch/1/${z.id}`}
-                </td>
+                                <td className="px-4 py-3 text-sm text-gray-500">
+                                    {z.id}
+                                </td>
 
-                <td className="px-4 py-3">
-                  <LinkButton
-                    onClick={() => router.push("/zap/" + z.id)}
-                  >
-                    Go
-                  </LinkButton>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+                                <td className="px-4 py-3 text-sm text-gray-500">
+                                    Nov 13, 2023
+                                </td>
+
+                                <td className="px-4 py-3 text-sm text-blue-600 truncate max-w-[250px]">
+                                    {`${HOOKS_URL}/hooks/catch/1/${z.id}`}
+                                </td>
+
+                                <td className="px-4 py-3">
+                                    <LinkButton
+                                        onClick={() => router.push("/zap/" + z.id)}
+                                    >
+                                        Go
+                                    </LinkButton>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
 }
